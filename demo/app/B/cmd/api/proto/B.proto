@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+option go_package = ".;proto";
+
+
+
+service B{
+	rpc HelloB(BReq) returns(BResp);
+
+}
+
+
+message BReq {
+	string name = 1;
+}
+message BResp {
+	string res = 1;
+}
+
+
+  
