@@ -23,9 +23,6 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type AClient interface {
 	HelloA(ctx context.Context, in *AReq, opts ...grpc.CallOption) (*AResp, error)
-	// 健康检查
-	Check(ctx context.Context, in *HealthCheckRequest, opts ...grpc.CallOption) (*HealthCheckResponse, error)
-	Watch(ctx context.Context, in *HealthCheckRequest, opts ...grpc.CallOption) (A_WatchClient, error)
 }
 
 type aClient struct {
@@ -45,55 +42,11 @@ func (c *aClient) HelloA(ctx context.Context, in *AReq, opts ...grpc.CallOption)
 	return out, nil
 }
 
-func (c *aClient) Check(ctx context.Context, in *HealthCheckRequest, opts ...grpc.CallOption) (*HealthCheckResponse, error) {
-	out := new(HealthCheckResponse)
-	err := c.cc.Invoke(ctx, "/A/Check", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *aClient) Watch(ctx context.Context, in *HealthCheckRequest, opts ...grpc.CallOption) (A_WatchClient, error) {
-	stream, err := c.cc.NewStream(ctx, &A_ServiceDesc.Streams[0], "/A/Watch", opts...)
-	if err != nil {
-		return nil, err
-	}
-	x := &aWatchClient{stream}
-	if err := x.ClientStream.SendMsg(in); err != nil {
-		return nil, err
-	}
-	if err := x.ClientStream.CloseSend(); err != nil {
-		return nil, err
-	}
-	return x, nil
-}
-
-type A_WatchClient interface {
-	Recv() (*HealthCheckResponse, error)
-	grpc.ClientStream
-}
-
-type aWatchClient struct {
-	grpc.ClientStream
-}
-
-func (x *aWatchClient) Recv() (*HealthCheckResponse, error) {
-	m := new(HealthCheckResponse)
-	if err := x.ClientStream.RecvMsg(m); err != nil {
-		return nil, err
-	}
-	return m, nil
-}
-
 // AServer is the server API for A service.
 // All implementations must embed UnimplementedAServer
 // for forward compatibility
 type AServer interface {
 	HelloA(context.Context, *AReq) (*AResp, error)
-	// 健康检查
-	Check(context.Context, *HealthCheckRequest) (*HealthCheckResponse, error)
-	Watch(*HealthCheckRequest, A_WatchServer) error
 	mustEmbedUnimplementedAServer()
 }
 
@@ -103,12 +56,6 @@ type UnimplementedAServer struct {
 
 func (UnimplementedAServer) HelloA(context.Context, *AReq) (*AResp, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method HelloA not implemented")
-}
-func (UnimplementedAServer) Check(context.Context, *HealthCheckRequest) (*HealthCheckResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Check not implemented")
-}
-func (UnimplementedAServer) Watch(*HealthCheckRequest, A_WatchServer) error {
-	return status.Errorf(codes.Unimplemented, "method Watch not implemented")
 }
 func (UnimplementedAServer) mustEmbedUnimplementedAServer() {}
 
@@ -141,45 +88,6 @@ func _A_HelloA_Handler(srv interface{}, ctx context.Context, dec func(interface{
 	return interceptor(ctx, in, info, handler)
 }
 
-func _A_Check_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(HealthCheckRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(AServer).Check(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/A/Check",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AServer).Check(ctx, req.(*HealthCheckRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _A_Watch_Handler(srv interface{}, stream grpc.ServerStream) error {
-	m := new(HealthCheckRequest)
-	if err := stream.RecvMsg(m); err != nil {
-		return err
-	}
-	return srv.(AServer).Watch(m, &aWatchServer{stream})
-}
-
-type A_WatchServer interface {
-	Send(*HealthCheckResponse) error
-	grpc.ServerStream
-}
-
-type aWatchServer struct {
-	grpc.ServerStream
-}
-
-func (x *aWatchServer) Send(m *HealthCheckResponse) error {
-	return x.ServerStream.SendMsg(m)
-}
-
 // A_ServiceDesc is the grpc.ServiceDesc for A service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -191,17 +99,7 @@ var A_ServiceDesc = grpc.ServiceDesc{
 			MethodName: "HelloA",
 			Handler:    _A_HelloA_Handler,
 		},
-		{
-			MethodName: "Check",
-			Handler:    _A_Check_Handler,
-		},
 	},
-	Streams: []grpc.StreamDesc{
-		{
-			StreamName:    "Watch",
-			Handler:       _A_Watch_Handler,
-			ServerStreams: true,
-		},
-	},
+	Streams:  []grpc.StreamDesc{},
 	Metadata: "A.proto",
 }

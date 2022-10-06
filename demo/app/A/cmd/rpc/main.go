@@ -2,8 +2,8 @@ package main
 
 import (
 	"fmt"
-	"gin-micro-demo/app/B/cmd/rpc/handler"
-	"gin-micro-demo/app/B/cmd/rpc/proto"
+	"gin-micro-demo/app/A/cmd/rpc/handler"
+	"gin-micro-demo/app/A/cmd/rpc/proto"
 	"gin-micro-demo/config"
 	"gin-micro-demo/utils"
 	"log"
@@ -31,7 +31,7 @@ func main() {
 		panic(err)
 	}
 
-	name := "srv_b"
+	name := "srv_a"
 	// 链路追踪
 	c, err := config.GetZipkinConfig()
 	if err != nil {
@@ -50,7 +50,7 @@ func main() {
 	}()
 
 	server := grpc.NewServer(opts)
-	proto.RegisterBServer(server, handler.BServerImpl{})
+	proto.RegisterAServer(server, handler.AServerImpl{})
 	log.Printf("%s is running at %s:%d", name, ip, port)
 
 	lis, err := net.Listen("tcp", fmt.Sprintf("%s:%d", ip, port))
@@ -68,17 +68,16 @@ func main() {
 		Port: port,
 		Name: name,
 		Id:   utils.GetUUId(),
-		Tags: []string{"B", "rpc"},
+		Tags: []string{"A", "rpc"},
 	}
 	// 注册rpc
 	err = utils.RegisterRpc(cfg)
 	if err != nil {
-		log.Fatalf("rpc register, err = %v", err)
+		panic(err)
 	}
 
 	// 开启 grpc 反射，方便调试
 	reflection.Register(server)
-
 	go func() {
 		err = server.Serve(lis)
 		if err != nil {
@@ -94,5 +93,4 @@ func main() {
 	} else {
 		log.Printf("[%s] 服务注销成功; \r\n", name)
 	}
-
 }

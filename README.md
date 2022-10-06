@@ -1,4 +1,4 @@
-# gin-micro-demo
+# README
 
 
 
@@ -37,11 +37,11 @@
     docker update --restart=always <容器 id>
     ```
 
-    ![image-20221004180357476](pics/gin-micro-demo/image-20221004180357476.png)
+    ![image-20221004180357476](pics/README/image-20221004180357476.png)
 
     访问 `http://ip:8500` 出现以下界面，代表成功（否则，谷歌一小下）
 
-    ![image-20221004180502009](pics/gin-micro-demo/image-20221004180502009.png)
+    ![image-20221004180502009](pics/README/image-20221004180502009.png)
 
 * 配置中心
 
@@ -52,11 +52,11 @@
     docker  run --name nacos -d -p 8848:8848 --restart=always -e JVM_XMS=256m -e JVM_XMX=256m -e MODE=standalone nacos/nacos-server
     ```
 
-    ![image-20221004180540129](pics/gin-micro-demo/image-20221004180540129.png)
+    ![image-20221004180540129](pics/README/image-20221004180540129.png)
 
 				访问 `http://ip:8848/nacos` 出现以下界面，则成功。
-
-![image-20221004180717105](pics/gin-micro-demo/image-20221004180717105.png)
+	
+	* ![image-20221004180717105](pics/README/image-20221004180717105.png)
 
 * 负载均衡
 
@@ -72,8 +72,31 @@
 
 * 链路追踪
 
+  * zipkin
+
+    * 安装
+
+      ```shell
+      docker run -d -p 9411:9411 openzipkin/zipkin
+      ```
+
+    * 浏览器打开`http://127.0.0.1:9411`  出现以下界面，则成功
+
+    * ![image-20221005155337743](pics/README/image-20221005155337743.png)
 
 
+  * opentracing
 
+    * 安装
+
+      * ```shell
+        go get -u github.com/openzipkin/zipkin-go-opentracing
+        go get -u github.com/grpc-ecosystem/grpc-opentracing/go/otgrpc
+        ```
+
+      * 
 
 * 断路器
+
+
+

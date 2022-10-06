@@ -40,9 +40,25 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+
 	BRpcCli := proto.NewBClient(conn)
 
 	g := gin.Default()
+
+	zipConfig, err := config.GetZipkinConfig()
+	if err != nil {
+		panic(err)
+	}
+	zipConfig.SERVICE_NAME = "b_api"
+	zipConfig.ZIPKIN_HTTP_ENDPOINT = fmt.Sprintf("%s:%d", ip, port)
+
+	// 获取链路最终
+	reporter := utils.SetGinTracer(zipConfig, g)
+	defer func() {
+		if reporter != nil {
+			reporter.Close()
+		}
+	}()
 	g.GET("/hello", func(ctx *gin.Context) {
 		ctx.JSON(200, gin.H{
 			"mag": "hello",
@@ -64,6 +80,7 @@ func main() {
 		})
 
 	})
+
 	utils.RegisterHealth(g)
 
 	name := "b_api"

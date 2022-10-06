@@ -95,3 +95,22 @@ func GetConsulConfig() (*ConsulConfig, error) {
 	log.Printf("从配置中心，获取 consul 配置 %+v \r\n", config)
 	return config, nil
 }
+
+func GetZipkinConfig() (*ZipkinConfig, error) {
+	consul_config := NacosConsul{
+		ConsulDataId: "demo_zipkin",
+		ConsulGroup:  "dev",
+	}
+	content, err := getNacosContent(
+		consul_config.ConsulDataId, consul_config.ConsulGroup)
+	if err != nil {
+		return nil, err
+	}
+	config := new(ZipkinConfig)
+	err = json.Unmarshal([]byte(content), config)
+	if err != nil {
+		return nil, err
+	}
+	log.Printf("从配置中心，获取 zipkin 配置 %+v \r\n", config)
+	return config, nil
+}
