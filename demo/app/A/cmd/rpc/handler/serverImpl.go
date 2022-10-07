@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"gin-micro-demo/app/A/cmd/rpc/proto"
-	"log"
 )
 
 type AServerImpl struct {
@@ -12,9 +11,7 @@ type AServerImpl struct {
 }
 
 func (s AServerImpl) HelloA(ctx context.Context, req *proto.AReq) (*proto.AResp, error) {
-	log.Printf("recv %s 's msg \r\n", req.Name)
 	resp := new(proto.AResp)
-	resp.Res = fmt.Sprintf("A: hello %s", req.Name)
-	log.Println("HelloA resp: ", resp)
+	resp.Res = fmt.Sprintf("A_RPC_send: hello %s", req.Name)
 	return resp, nil
 }

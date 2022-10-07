@@ -96,6 +96,7 @@ func GetConsulConfig() (*ConsulConfig, error) {
 	return config, nil
 }
 
+// @TODO 可以使用单例模式 + 监听配置更改优化
 func GetZipkinConfig() (*ZipkinConfig, error) {
 	consul_config := NacosConsul{
 		ConsulDataId: "demo_zipkin",

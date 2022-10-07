@@ -41,3 +41,8 @@ type ZipkinConfig struct {
 	ZIPKIN_RECORDER_HOST_PORT string `mapstructure:"ZIPKIN_RECORDER_HOST_PORT" json:"ZIPKIN_RECORDER_HOST_PORT"`
 	ZIPKIN_HTTP_ENDPOINT      string `mapstructure:"ZIPKIN_HTTP_ENDPOINT" json:"ZIPKIN_HTTP_ENDPOINT"`
 }
+
+type IpPort struct {
+	Ip   string
+	Port int
+}

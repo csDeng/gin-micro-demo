@@ -83,6 +83,18 @@
     * 浏览器打开`http://127.0.0.1:9411`  出现以下界面，则成功
 
     * ![image-20221005155337743](pics/README/image-20221005155337743.png)
+    
+    * 追踪功能
+    
+      - [x] api 调用 rpc客户端
+      - [x] rpc客户端 调用 rpc服务端
+    
+      ![image-20221007144624034](pics/README/image-20221007144624034.png)
+    
+      - [x] ctx 传递（中间件实现）
+    
+      ![image-20221007144933768](pics/README/image-20221007144933768.png)
+    
 
 
   * opentracing
@@ -94,7 +106,9 @@
         go get -u github.com/grpc-ecosystem/grpc-opentracing/go/otgrpc
         ```
 
-      * 
+    * 注意
+
+      * 为保证 gin 调用 rpc 时跟踪链路的完整性，已侵入修改 `go-otgrpc` 源码使用
 
 * 断路器
 

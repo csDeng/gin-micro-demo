@@ -1,11 +1,13 @@
 package utils
 
 import (
+	"fmt"
 	"gin-micro-demo/config"
+	"gin-micro-demo/ctx_const"
+	"gin-micro-demo/otgrpc"
 	"log"
 
 	"github.com/gin-gonic/gin"
-	"github.com/grpc-ecosystem/grpc-opentracing/go/otgrpc"
 	"github.com/opentracing/opentracing-go"
 	zipkinot "github.com/openzipkin-contrib/zipkin-go-opentracing"
 	"github.com/openzipkin/zipkin-go"
@@ -15,7 +17,6 @@ import (
 )
 
 func getTrace(c *config.ZipkinConfig) (opentracing.Tracer, reporter.Reporter) {
-
 	// create our local service endpoint
 	//记录服务名称和端口
 	endpoint, err := zipkin.NewEndpoint(c.SERVICE_NAME, c.ZIPKIN_HTTP_ENDPOINT)
@@ -37,8 +38,6 @@ func getTrace(c *config.ZipkinConfig) (opentracing.Tracer, reporter.Reporter) {
 		zipkin.WithLocalEndpoint(endpoint),
 	)
 	tracer := zipkinot.Wrap(nativeTracer)
-	// optionally set as Global OpenTracing tracer instance
-	opentracing.SetGlobalTracer(tracer)
 	// use zipkin-go-opentracing to wrap our tracer
 	return tracer, reporter
 
@@ -47,6 +46,8 @@ func getTrace(c *config.ZipkinConfig) (opentracing.Tracer, reporter.Reporter) {
 // 获取开启链路追踪的 rpc_server_opt
 func GetGrpcOpt(c *config.ZipkinConfig) (grpc.ServerOption, reporter.Reporter) {
 	tracer, reporter := getTrace(c)
+	// optionally set as Global OpenTracing tracer instance
+	opentracing.SetGlobalTracer(tracer)
 	opts := grpc.UnaryInterceptor(
 		// otgrpc.LogPayloads 是否记录 入参和出参
 		// otgrpc.SpanDecorator 装饰器，回调函数
@@ -59,9 +60,8 @@ func GetGrpcOpt(c *config.ZipkinConfig) (grpc.ServerOption, reporter.Reporter) {
 			otgrpc.IncludingSpans(func(parentSpanCtx opentracing.SpanContext, method string, req, resp interface{}) bool {
 				if method == "/grpc.health.v1.Health/Check" {
 					// 健康检查不打印
-					return true
+					return false
 				}
-				log.Printf("\r\n parent= %+v \r\n", parentSpanCtx)
 				log.Printf("method: %s", method)
 				log.Printf("req: %+v", req)
 				log.Printf("resp: %+v", resp)
@@ -85,15 +85,50 @@ func GetGrpcOpt(c *config.ZipkinConfig) (grpc.ServerOption, reporter.Reporter) {
 	return opts, reporter
 }
 
-// g 链路追踪
+// gin 全局中间件 链路追踪
 func SetGinTracer(c *config.ZipkinConfig, g *gin.Engine) reporter.Reporter {
-	trace, reporter := getTrace(c)
+	tracer, reporter := getTrace(c)
+	opentracing.SetGlobalTracer(tracer)
 	// 将tracer注入到gin的中间件中
 	g.Use(func(c *gin.Context) {
-		span := trace.StartSpan(c.FullPath())
-		defer span.Finish()
+		if c.FullPath() == "/health" {
+			// 健康检查不记录
+			return
+		}
+		tracer = opentracing.GlobalTracer()
+		c.Set(ctx_const.TracerCtxName, tracer)
+		parentSpan := tracer.StartSpan("gin_middleware_" + c.FullPath() + c.RemoteIP())
+		defer parentSpan.Finish()
+		c.Set(ctx_const.ParentSpanCtxName, parentSpan)
+		c.Set(ctx_const.GinContextName, c)
 		c.Next()
 	})
 	return reporter
+
+}
+
+// gin context 链路追踪
+func SetContextTracer(g *gin.Context, srv_name string) (opentracing.Span, reporter.Reporter) {
+	ip_port := GetIpPort()
+	ip, port := ip_port.Ip, ip_port.Port
+	c, err := config.GetZipkinConfig()
+	if err != nil {
+		panic(err)
+	}
+
+	c.SERVICE_NAME = srv_name
+
+	c.ZIPKIN_HTTP_ENDPOINT = fmt.Sprintf("%s:%d", ip, port)
+	tracer, reporter := getTrace(c)
+	var child opentracing.Span
+
+	if span, ok := g.Get(ctx_const.ParentSpanCtxName); ok {
+		parentSpan := span.(opentracing.Span)
+		child = tracer.StartSpan("gin_context_withParentSpan_tracer_"+g.FullPath(), opentracing.ChildOf(parentSpan.Context()))
+	} else {
+		child = tracer.StartSpan("gin_context_tracer_" + g.FullPath() + "_" + g.RemoteIP())
+	}
+
+	return child, reporter
 
 }

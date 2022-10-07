@@ -31,7 +31,7 @@ func main() {
 		panic(err)
 	}
 
-	name := "srv_a"
+	name := "srv_a_server"
 	// 链路追踪
 	c, err := config.GetZipkinConfig()
 	if err != nil {
@@ -70,6 +70,7 @@ func main() {
 		Id:   utils.GetUUId(),
 		Tags: []string{"A", "rpc"},
 	}
+
 	// 注册rpc
 	err = utils.RegisterRpc(cfg)
 	if err != nil {
@@ -84,6 +85,7 @@ func main() {
 			panic(err)
 		}
 	}()
+
 	// 优雅重启，退出
 	quit := make(chan os.Signal)
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)

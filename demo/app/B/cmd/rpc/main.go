@@ -31,7 +31,7 @@ func main() {
 		panic(err)
 	}
 
-	name := "srv_b"
+	name := "srv_b_server"
 	// 链路追踪
 	c, err := config.GetZipkinConfig()
 	if err != nil {

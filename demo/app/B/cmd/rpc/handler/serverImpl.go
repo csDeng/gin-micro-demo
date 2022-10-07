@@ -25,7 +25,7 @@ func (s BServerImpl) HelloB(ctx context.Context, req *proto.BReq) (*proto.BResp,
 			Host: c.Host,
 			Port: c.Port,
 		},
-		SrvName: "srv_a",
+		SrvName: "srv_a_server",
 	}
 	ArpcConfig := config.RpcCliConfig{
 		ConsulConfig: config.ConsulConfig{
@@ -34,7 +34,7 @@ func (s BServerImpl) HelloB(ctx context.Context, req *proto.BReq) (*proto.BResp,
 		},
 		SrvName: rc.SrvName,
 	}
-	ARpcCli, err := utils.GetRpcCli(&ArpcConfig)
+	ARpcCli, err := utils.RpcGetRpcCli(&ArpcConfig)
 	if err != nil {
 		return nil, err
 	}
@@ -42,11 +42,12 @@ func (s BServerImpl) HelloB(ctx context.Context, req *proto.BReq) (*proto.BResp,
 	r, err := client.HelloA(
 		ctx,
 		&AP.AReq{
-			Name: "通过 B rpc 调用 A rpc",
+			Name: "B call A",
 		})
 	if err != nil {
 		return nil, err
 	}
+
 	resp.Res = r.Res
 	return resp, nil
 }

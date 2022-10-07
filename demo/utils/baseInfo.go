@@ -2,8 +2,10 @@ package utils
 
 import (
 	"errors"
+	"gin-micro-demo/config"
 	"net"
 	"strings"
+	"sync"
 )
 
 func GetIp() (string, error) {
@@ -31,4 +33,27 @@ func GetFreePort() (int, error) {
 	}
 	defer l.Close()
 	return l.Addr().(*net.TCPAddr).Port, nil
+}
+
+var (
+	ip_port *config.IpPort
+	ip_once sync.Once
+)
+
+func GetIpPort() *config.IpPort {
+	ip_once.Do(func() {
+		p, err := GetFreePort()
+		if err != nil {
+			panic(err)
+		}
+		ip, err := GetIp()
+		if err != nil {
+			panic(err)
+		}
+		ip_port = &config.IpPort{
+			Port: p,
+			Ip:   ip,
+		}
+	})
+	return ip_port
 }
