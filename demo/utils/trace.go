@@ -8,6 +8,7 @@ import (
 	"log"
 
 	"github.com/gin-gonic/gin"
+	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	"github.com/opentracing/opentracing-go"
 	zipkinot "github.com/openzipkin-contrib/zipkin-go-opentracing"
 	"github.com/openzipkin/zipkin-go"
@@ -48,38 +49,45 @@ func GetGrpcOpt(c *config.ZipkinConfig) (grpc.ServerOption, reporter.Reporter) {
 	tracer, reporter := getTrace(c)
 	// optionally set as Global OpenTracing tracer instance
 	opentracing.SetGlobalTracer(tracer)
+
 	opts := grpc.UnaryInterceptor(
 		// otgrpc.LogPayloads 是否记录 入参和出参
 		// otgrpc.SpanDecorator 装饰器，回调函数
 		// otgrpc.IncludingSpans 是否记录
 		// grpc 拦截器
-		otgrpc.OpenTracingServerInterceptor(
-			tracer,
-			otgrpc.LogPayloads(),
-			// IncludingSpans是请求前回调
-			otgrpc.IncludingSpans(func(parentSpanCtx opentracing.SpanContext, method string, req, resp interface{}) bool {
-				if method == "/grpc.health.v1.Health/Check" {
-					// 健康检查不打印
-					return false
-				}
-				log.Printf("method: %s", method)
-				log.Printf("req: %+v", req)
-				log.Printf("resp: %+v", resp)
-				log.Println("\r\n----------------")
-				return true
-			}),
-			// SpanDecorator是请求后回调
-			otgrpc.SpanDecorator(func(span opentracing.Span, method string, req, resp interface{}, grpcError error) {
-				if method == "/grpc.health.v1.Health/Check" {
-					// 健康检查不打印
-					return
-				}
-				log.Printf("method: %s", method)
-				log.Printf("req: %+v", req)
-				log.Printf("resp: %+v", resp)
-				log.Printf("grpcError: %+v", grpcError)
-				log.Println("\r\n----------------")
-			}),
+		grpc_middleware.ChainUnaryServer(
+			// 链路追踪
+			otgrpc.OpenTracingServerInterceptor(
+				tracer,
+				otgrpc.LogPayloads(),
+				// IncludingSpans是请求前回调
+				otgrpc.IncludingSpans(func(parentSpanCtx opentracing.SpanContext, method string, req, resp interface{}) bool {
+					if method == "/grpc.health.v1.Health/Check" {
+						// 健康检查不打印
+						return false
+					}
+					log.Printf("method: %s", method)
+					log.Printf("req: %+v", req)
+					log.Printf("resp: %+v", resp)
+					log.Println("\r\n----------------")
+					return true
+				}),
+				// SpanDecorator是请求后回调
+				otgrpc.SpanDecorator(func(span opentracing.Span, method string, req, resp interface{}, grpcError error) {
+					if method == "/grpc.health.v1.Health/Check" {
+						// 健康检查不打印
+						return
+					}
+					log.Printf("method: %s", method)
+					log.Printf("req: %+v", req)
+					log.Printf("resp: %+v", resp)
+					log.Printf("grpcError: %+v", grpcError)
+					log.Println("\r\n----------------")
+				}),
+			),
+
+			// 限流，注意限流应该在追踪链后面
+			grpc.UnaryServerInterceptor(GetUnaryThrottleInterceptor(c.SERVICE_NAME)),
 		),
 	)
 	return opts, reporter

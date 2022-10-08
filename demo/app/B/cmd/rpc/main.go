@@ -40,6 +40,10 @@ func main() {
 	c.SERVICE_NAME = name
 	c.ZIPKIN_HTTP_ENDPOINT = fmt.Sprintf("%s:%d", ip, port)
 
+	// 配置限流器，一定要在获取rpc 配置之前，
+	// 因为在获取rpc配置额时候，注入了限流拦截到中间件链路上
+	utils.InitSentinel(name)
+
 	// 获取链路追踪的服务配置
 	// 注意 发布器不能在局部函数里面关闭，否则会导致追踪器无法上报日志
 	opts, reporter := utils.GetGrpcOpt(c)

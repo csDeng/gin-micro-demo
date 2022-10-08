@@ -18,12 +18,16 @@ func main() {
 	ip, port := ip_port.Ip, ip_port.Port
 
 	g := gin.Default()
+	name := "b_api"
+	// 注入限流中间件
+	utils.InitSentinel(name)
+	utils.SetSentinelMiddleware(g, name)
 
 	zipConfig, err := config.GetZipkinConfig()
 	if err != nil {
 		panic(err)
 	}
-	name := "b_api"
+
 	zipConfig.SERVICE_NAME = name
 	zipConfig.ZIPKIN_HTTP_ENDPOINT = fmt.Sprintf("%s:%d", ip, port)
 
