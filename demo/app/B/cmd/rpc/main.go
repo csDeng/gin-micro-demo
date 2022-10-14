@@ -44,6 +44,9 @@ func main() {
 	// 因为在获取rpc配置额时候，注入了限流拦截到中间件链路上
 	utils.InitSentinel(name)
 
+	// 注入熔断器
+	utils.InitFusing(name)
+
 	// 获取链路追踪的服务配置
 	// 注意 发布器不能在局部函数里面关闭，否则会导致追踪器无法上报日志
 	opts, reporter := utils.GetGrpcOpt(c)

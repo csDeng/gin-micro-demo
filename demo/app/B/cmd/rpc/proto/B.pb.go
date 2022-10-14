@@ -20,6 +20,44 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+type EmptyReq struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+}
+
+func (x *EmptyReq) Reset() {
+	*x = EmptyReq{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_B_proto_msgTypes[0]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *EmptyReq) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*EmptyReq) ProtoMessage() {}
+
+func (x *EmptyReq) ProtoReflect() protoreflect.Message {
+	mi := &file_B_proto_msgTypes[0]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use EmptyReq.ProtoReflect.Descriptor instead.
+func (*EmptyReq) Descriptor() ([]byte, []int) {
+	return file_B_proto_rawDescGZIP(), []int{0}
+}
+
 type BReq struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -31,7 +69,7 @@ type BReq struct {
 func (x *BReq) Reset() {
 	*x = BReq{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_B_proto_msgTypes[0]
+		mi := &file_B_proto_msgTypes[1]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -44,7 +82,7 @@ func (x *BReq) String() string {
 func (*BReq) ProtoMessage() {}
 
 func (x *BReq) ProtoReflect() protoreflect.Message {
-	mi := &file_B_proto_msgTypes[0]
+	mi := &file_B_proto_msgTypes[1]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -57,7 +95,7 @@ func (x *BReq) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BReq.ProtoReflect.Descriptor instead.
 func (*BReq) Descriptor() ([]byte, []int) {
-	return file_B_proto_rawDescGZIP(), []int{0}
+	return file_B_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *BReq) GetName() string {
@@ -78,7 +116,7 @@ type BResp struct {
 func (x *BResp) Reset() {
 	*x = BResp{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_B_proto_msgTypes[1]
+		mi := &file_B_proto_msgTypes[2]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -91,7 +129,7 @@ func (x *BResp) String() string {
 func (*BResp) ProtoMessage() {}
 
 func (x *BResp) ProtoReflect() protoreflect.Message {
-	mi := &file_B_proto_msgTypes[1]
+	mi := &file_B_proto_msgTypes[2]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -104,7 +142,7 @@ func (x *BResp) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BResp.ProtoReflect.Descriptor instead.
 func (*BResp) Descriptor() ([]byte, []int) {
-	return file_B_proto_rawDescGZIP(), []int{1}
+	return file_B_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *BResp) GetRes() string {
@@ -114,17 +152,69 @@ func (x *BResp) GetRes() string {
 	return ""
 }
 
+type BFusingResp struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Res string `protobuf:"bytes,1,opt,name=res,proto3" json:"res,omitempty"`
+}
+
+func (x *BFusingResp) Reset() {
+	*x = BFusingResp{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_B_proto_msgTypes[3]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *BFusingResp) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*BFusingResp) ProtoMessage() {}
+
+func (x *BFusingResp) ProtoReflect() protoreflect.Message {
+	mi := &file_B_proto_msgTypes[3]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use BFusingResp.ProtoReflect.Descriptor instead.
+func (*BFusingResp) Descriptor() ([]byte, []int) {
+	return file_B_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *BFusingResp) GetRes() string {
+	if x != nil {
+		return x.Res
+	}
+	return ""
+}
+
 var File_B_proto protoreflect.FileDescriptor
 
 var file_B_proto_rawDesc = []byte{
-	0x0a, 0x07, 0x42, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22, 0x1a, 0x0a, 0x04, 0x42, 0x52, 0x65,
-	0x71, 0x12, 0x12, 0x0a, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52,
-	0x04, 0x6e, 0x61, 0x6d, 0x65, 0x22, 0x19, 0x0a, 0x05, 0x42, 0x52, 0x65, 0x73, 0x70, 0x12, 0x10,
-	0x0a, 0x03, 0x72, 0x65, 0x73, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x03, 0x72, 0x65, 0x73,
-	0x32, 0x1c, 0x0a, 0x01, 0x42, 0x12, 0x17, 0x0a, 0x06, 0x48, 0x65, 0x6c, 0x6c, 0x6f, 0x42, 0x12,
-	0x05, 0x2e, 0x42, 0x52, 0x65, 0x71, 0x1a, 0x06, 0x2e, 0x42, 0x52, 0x65, 0x73, 0x70, 0x42, 0x09,
-	0x5a, 0x07, 0x2e, 0x3b, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f,
-	0x33,
+	0x0a, 0x07, 0x42, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22, 0x0a, 0x0a, 0x08, 0x45, 0x6d, 0x70,
+	0x74, 0x79, 0x52, 0x65, 0x71, 0x22, 0x1a, 0x0a, 0x04, 0x42, 0x52, 0x65, 0x71, 0x12, 0x12, 0x0a,
+	0x04, 0x6e, 0x61, 0x6d, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x6e, 0x61, 0x6d,
+	0x65, 0x22, 0x19, 0x0a, 0x05, 0x42, 0x52, 0x65, 0x73, 0x70, 0x12, 0x10, 0x0a, 0x03, 0x72, 0x65,
+	0x73, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x03, 0x72, 0x65, 0x73, 0x22, 0x1f, 0x0a, 0x0b,
+	0x42, 0x46, 0x75, 0x73, 0x69, 0x6e, 0x67, 0x52, 0x65, 0x73, 0x70, 0x12, 0x10, 0x0a, 0x03, 0x72,
+	0x65, 0x73, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x03, 0x72, 0x65, 0x73, 0x32, 0x43, 0x0a,
+	0x01, 0x42, 0x12, 0x17, 0x0a, 0x06, 0x48, 0x65, 0x6c, 0x6c, 0x6f, 0x42, 0x12, 0x05, 0x2e, 0x42,
+	0x52, 0x65, 0x71, 0x1a, 0x06, 0x2e, 0x42, 0x52, 0x65, 0x73, 0x70, 0x12, 0x25, 0x0a, 0x0a, 0x46,
+	0x75, 0x73, 0x69, 0x6e, 0x67, 0x54, 0x65, 0x73, 0x74, 0x12, 0x09, 0x2e, 0x45, 0x6d, 0x70, 0x74,
+	0x79, 0x52, 0x65, 0x71, 0x1a, 0x0c, 0x2e, 0x42, 0x46, 0x75, 0x73, 0x69, 0x6e, 0x67, 0x52, 0x65,
+	0x73, 0x70, 0x42, 0x09, 0x5a, 0x07, 0x2e, 0x3b, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x06, 0x70,
+	0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -139,16 +229,20 @@ func file_B_proto_rawDescGZIP() []byte {
 	return file_B_proto_rawDescData
 }
 
-var file_B_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
+var file_B_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
 var file_B_proto_goTypes = []interface{}{
-	(*BReq)(nil),  // 0: BReq
-	(*BResp)(nil), // 1: BResp
+	(*EmptyReq)(nil),    // 0: EmptyReq
+	(*BReq)(nil),        // 1: BReq
+	(*BResp)(nil),       // 2: BResp
+	(*BFusingResp)(nil), // 3: BFusingResp
 }
 var file_B_proto_depIdxs = []int32{
-	0, // 0: B.HelloB:input_type -> BReq
-	1, // 1: B.HelloB:output_type -> BResp
-	1, // [1:2] is the sub-list for method output_type
-	0, // [0:1] is the sub-list for method input_type
+	1, // 0: B.HelloB:input_type -> BReq
+	0, // 1: B.FusingTest:input_type -> EmptyReq
+	2, // 2: B.HelloB:output_type -> BResp
+	3, // 3: B.FusingTest:output_type -> BFusingResp
+	2, // [2:4] is the sub-list for method output_type
+	0, // [0:2] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name
 	0, // [0:0] is the sub-list for extension extendee
 	0, // [0:0] is the sub-list for field type_name
@@ -161,7 +255,7 @@ func file_B_proto_init() {
 	}
 	if !protoimpl.UnsafeEnabled {
 		file_B_proto_msgTypes[0].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*BReq); i {
+			switch v := v.(*EmptyReq); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -173,7 +267,31 @@ func file_B_proto_init() {
 			}
 		}
 		file_B_proto_msgTypes[1].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*BReq); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_B_proto_msgTypes[2].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*BResp); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_B_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*BFusingResp); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -191,7 +309,7 @@ func file_B_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_B_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   2,
+			NumMessages:   4,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

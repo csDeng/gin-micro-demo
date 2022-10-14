@@ -2,10 +2,12 @@ package handler
 
 import (
 	"context"
+	"errors"
 	AP "gin-micro-demo/app/A/cmd/rpc/proto"
 	"gin-micro-demo/app/B/cmd/rpc/proto"
 	"gin-micro-demo/config"
 	"gin-micro-demo/utils"
+	"time"
 )
 
 type BServerImpl struct {
@@ -50,4 +52,16 @@ func (s BServerImpl) HelloB(ctx context.Context, req *proto.BReq) (*proto.BResp,
 
 	resp.Res = r.Res
 	return resp, nil
+}
+
+func (s BServerImpl) FusingTest(context.Context, *proto.EmptyReq) (*proto.BFusingResp, error) {
+
+	t := time.Now().Unix()
+	if t&1 == 1 {
+		return nil, errors.New("fusing")
+	}
+	return &proto.BFusingResp{
+		Res: "fusing",
+	}, nil
+
 }

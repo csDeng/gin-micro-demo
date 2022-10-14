@@ -6,14 +6,19 @@ option go_package = ".;proto";
 
 service B{
 	rpc HelloB(BReq) returns(BResp);
-
+	rpc FusingTest(EmptyReq) returns(BFusingResp);
 }
 
+message EmptyReq {}
 
 message BReq {
 	string name = 1;
 }
 message BResp {
+	string res = 1;
+}
+
+message BFusingResp {
 	string res = 1;
 }
 

@@ -23,6 +23,7 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type BClient interface {
 	HelloB(ctx context.Context, in *BReq, opts ...grpc.CallOption) (*BResp, error)
+	FusingTest(ctx context.Context, in *EmptyReq, opts ...grpc.CallOption) (*BFusingResp, error)
 }
 
 type bClient struct {
@@ -42,11 +43,21 @@ func (c *bClient) HelloB(ctx context.Context, in *BReq, opts ...grpc.CallOption)
 	return out, nil
 }
 
+func (c *bClient) FusingTest(ctx context.Context, in *EmptyReq, opts ...grpc.CallOption) (*BFusingResp, error) {
+	out := new(BFusingResp)
+	err := c.cc.Invoke(ctx, "/B/FusingTest", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // BServer is the server API for B service.
 // All implementations must embed UnimplementedBServer
 // for forward compatibility
 type BServer interface {
 	HelloB(context.Context, *BReq) (*BResp, error)
+	FusingTest(context.Context, *EmptyReq) (*BFusingResp, error)
 	mustEmbedUnimplementedBServer()
 }
 
@@ -56,6 +67,9 @@ type UnimplementedBServer struct {
 
 func (UnimplementedBServer) HelloB(context.Context, *BReq) (*BResp, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method HelloB not implemented")
+}
+func (UnimplementedBServer) FusingTest(context.Context, *EmptyReq) (*BFusingResp, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method FusingTest not implemented")
 }
 func (UnimplementedBServer) mustEmbedUnimplementedBServer() {}
 
@@ -88,6 +102,24 @@ func _B_HelloB_Handler(srv interface{}, ctx context.Context, dec func(interface{
 	return interceptor(ctx, in, info, handler)
 }
 
+func _B_FusingTest_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(EmptyReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BServer).FusingTest(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/B/FusingTest",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BServer).FusingTest(ctx, req.(*EmptyReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // B_ServiceDesc is the grpc.ServiceDesc for B service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -98,6 +130,10 @@ var B_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "HelloB",
 			Handler:    _B_HelloB_Handler,
+		},
+		{
+			MethodName: "FusingTest",
+			Handler:    _B_FusingTest_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
